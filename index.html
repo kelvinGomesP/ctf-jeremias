@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>CTF Token Interface</title>
+  <style>
+    body {
+      font-family: monospace;
+      background-color: #111;
+      color: #0f0;
+      padding: 20px;
+    }
+    input, button {
+      background: #222;
+      color: #0f0;
+      border: 1px solid #0f0;
+      padding: 10px;
+      font-size: 16px;
+      margin-top: 10px;
+      width: 90%;
+    }
+    .block {
+      max-width: 500px;
+      margin: auto;
+    }
+    h1 { color: #0f0; }
+    #output {
+      margin-top: 20px;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
+  <div class="block">
+    <div style="text-align: center;">
+      <img src="/static/gary.png" alt="Gary do Bob Esponja" width="150" style="margin-bottom: 20px;">
+    </div>
+    <h1>Desafio Token CTF</h1>
+    <h3>1. Gerar Token</h3>
+    <input type="text" id="name" placeholder='ex:abc...'>
+    <button onclick="generateToken()">Gerar Token</button>
+
+    <h3>2. Ver Flag</h3>
+    <input type="text" id="token" placeholder="Cole o token aqui">
+    <button onclick="viewFlag()">Ver Flag</button>
+
+    <div id="output"></div>
+  </div>
+
+  <script>
+    function parseHexInput(input) {
+      return input.replace(/\\x([0-9A-Fa-f]{2})/g, (_, hex) =>
+        String.fromCharCode(parseInt(hex, 16))
+      );
+    }
+
+    async function generateToken() {
+      let nameInput = document.getElementById("name").value;
+      let name = parseHexInput(nameInput);
+
+      const res = await fetch("/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name })
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        document.getElementById("output").innerText = "Token gerado:\n" + data.token;
+      } else {
+        document.getElementById("output").innerText = "Erro: " + data.error;
+      }
+    }
+
+    async function viewFlag() {
+      const token = document.getElementById("token").value;
+      const res = await fetch("/view", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token })
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        document.getElementById("output").innerText = "Flag: " + data.flag;
+      } else {
+        document.getElementById("output").innerText = "Erro: " + data.error;
+      }
+    }
+  </script>
+</body>
+</html>

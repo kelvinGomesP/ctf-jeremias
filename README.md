@@ -1,0 +1,1 @@
+Desafio do ctf adaptado do token de 2022 WRECKCTF 2022
